@@ -61,14 +61,14 @@ public class main {
 	}
 
 	public static void printTime(long[] time, int size, String sortType, String whatSort) {
-		System.out.println("Times for " + sortType +  " " + whatSort + " Sort of " + size + " items (milliseconds)");
+		System.out.println("Times for " + sortType +  " " + whatSort + " Sort of " + size + " items (nanoseconds)");
 		long sum = 0;
 		for (int i = 0; i < time.length; i++) {
-			System.out.print(time[i] + " ");
+			System.out.print((double)(time[i] / 1000000000.0) + " ");
 			sum += time[i];
 		}
 		sum /= time.length;
-		System.out.println("\nAverage time: " + sum + " (milliseconds)");
+		System.out.println("\nAverage time: " + (double)(sum / 1000000000.0) + " (nanoseconds)");
 	}
 
 	public static void performSelection(String type, boolean a, int insertion) {
@@ -83,27 +83,31 @@ public class main {
 				f = new File(s);
 				array = generateArray(f, i);
 				switch(type) {
-				case "Selection": l = System.currentTimeMillis();
+				case "Selection": l = System.nanoTime();
 								SortsClass.selectionSort(array, i);
-								time[j] = System.currentTimeMillis() - l;
+								time[j] = System.nanoTime() - l;
 								break;
-				case "Bubble": 	l = System.currentTimeMillis();
+				case "Bubble": 	l = System.nanoTime();
 								SortsClass.bubbleSort(array, i);
-								time[j] = System.currentTimeMillis() - l;
+								time[j] = System.nanoTime() - l;
 								break;
-				case "Insertion": l = System.currentTimeMillis();
-								SortsClass.insertionSort(array, i);
-								time[j] = System.currentTimeMillis() - l;
+				case "Insertion": l = System.nanoTime();
+								SortsClass.insertionSort(array, i, 0, i - 1);
+								time[j] = System.nanoTime() - l;
 								break;
-				case "Merge" : l = System.currentTimeMillis();
-							SortsClass.mergesort(array, 0, i - 1, insertion);
-							time[j] = System.currentTimeMillis() - l;
+				case "Merge" : l = System.nanoTime();
+							SortsClass.mergesort(array, 0, i - 1);
+							time[j] = System.nanoTime() - l;
 							break;
-				case "Quick": l = System.currentTimeMillis();
+				case "Quick": l = System.nanoTime();
 							SortsClass.quickSort(array, 0, i - 1, a);
-							time[j] = System.currentTimeMillis() - l;
+							time[j] = System.nanoTime() - l;
 							break;
+				case "Hybrid": l = System.nanoTime();
+							hybridSort(array, 0, i-1, insertion);
+							time[j] = System.nanoTime() - l;
 				}
+				//System.out.println(time[j]);
 				sortFile(array, j, type);
 			}
 			printTime(time, i, type, "");
@@ -123,25 +127,25 @@ public class main {
 				f = new File(s);
 				array = generateArray(f, i);
 				switch(type) {
-				case "Selection": l = System.currentTimeMillis();
+				case "Selection": l = System.nanoTime();
 								SortsClass.selectionSort(array, i);
-								time[j] = System.currentTimeMillis() - l;
+								time[j] = System.nanoTime() - l;
 								break;
-				case "Bubble": 	l = System.currentTimeMillis();
+				case "Bubble": 	l = System.nanoTime();
 								SortsClass.bubbleSort(array, i);
-								time[j] = System.currentTimeMillis() - l;
+								time[j] = System.nanoTime() - l;
 								break;
-				case "Insertion": l = System.currentTimeMillis();
-								SortsClass.insertionSort(array, i);
-								time[j] = System.currentTimeMillis() - l;
+				case "Insertion": l = System.nanoTime();
+								SortsClass.insertionSort(array, i, 0, i - 1);
+								time[j] = System.nanoTime() - l;
 								break;
-				case "Merge" : l = System.currentTimeMillis();
-							SortsClass.mergesort(array, 0, array.length - 1, insertion);
-							time[j] = System.currentTimeMillis() - l;
+				case "Merge" : l = System.nanoTime();
+							SortsClass.mergesort(array, 0, array.length - 1);
+							time[j] = System.nanoTime() - l;
 							break;
-				case "Quick": l = System.currentTimeMillis();
+				case "Quick": l = System.nanoTime();
 							SortsClass.quickSort(array, 0, array.length - 1, a);
-							time[j] = System.currentTimeMillis() - l;
+							time[j] = System.nanoTime() - l;
 							break;
 				}
 				if(!a)
@@ -165,7 +169,7 @@ public class main {
 				s = i + "_" + j + ".dat";
 				f = new File(s);
 				array = generateArray(f, i);
-				l = System.currentTimeMillis();
+				l = System.nanoTime();
 				for(int k = 0; k < array.length; k++)
 					H.heapInsert(array[k]);
 				int k = 0;
@@ -173,7 +177,7 @@ public class main {
 					array[k] = H.heapDelete();
 					k++;
 				}
-				time[j] = System.currentTimeMillis() - l;
+				time[j] = System.nanoTime() - l;
 				sortFile(array, j, "Heap");
 			}
 			printTime(time, i, "Heap", "");
@@ -192,7 +196,7 @@ public class main {
 				s = "Heap_" + i + "_" + j + ".dat";
 				f = new File(s);
 				array = generateArray(f, i);
-				l = System.currentTimeMillis();
+				l = System.nanoTime();
 				for(int k = 0; k < array.length; k++)
 					H.heapInsert(array[k]);
 				int k = 0;
@@ -200,7 +204,7 @@ public class main {
 					array[k] = H.heapDelete();
 					k++;
 				}
-				time[j] = System.currentTimeMillis() - l;
+				time[j] = System.nanoTime() - l;
 				sortFile(array, j, "Heap");
 			}
 			printTime(time, i, "Heap", "Resorted");
@@ -219,7 +223,7 @@ public class main {
 				s = i + "_" + j + ".dat";
 				f = new File(s);
 				array = generateArray(f, i);
-				l = System.currentTimeMillis();
+				l = System.nanoTime();
 				for(int k = 0; k < array.length; k++) {
 					T.insert(array[k]);
 				}
@@ -228,7 +232,7 @@ public class main {
 				for(int k = 0; k < array.length; k++) {
 					array[k] = I.next();
 				}
-				time[j] = System.currentTimeMillis() - l;
+				time[j] = System.nanoTime() - l;
 				sortFile(array, j, "Tree");
 				
 			}
@@ -248,7 +252,7 @@ public class main {
 				s = "Tree_" + i + "_" + j + ".dat";
 				f = new File(s);
 				array = generateArray(f, i);
-				l = System.currentTimeMillis();
+				l = System.nanoTime();
 				for(int k = 0; k < array.length; k++) {
 					T.insert(array[k]);
 				}
@@ -257,7 +261,7 @@ public class main {
 				for(int k = 0; k < array.length; k++) {
 					array[k] = I.next();
 				}
-				time[j] = System.currentTimeMillis() - l;
+				time[j] = System.nanoTime() - l;
 				sortFile(array, j, "Tree");
 				
 			}
@@ -265,27 +269,43 @@ public class main {
 		}
 	}
 	
+	public static void hybridSort(Comparable [] array, int first, int last, int insertion) {
+		int mid;
+		if(first + insertion < last) {
+			mid = (last + first) / 2;
+			hybridSort(array, first, mid, insertion);
+			hybridSort(array, mid+1, last, insertion);
+			SortsClass.merge(array, first, mid, last);
+			
+		}
+		else
+			SortsClass.insertionSort(array, last - first + 1, first, last);
+
+	}
+	
 	
 	public static void main(String[] args) {
 		// Part 1:
-		//for (int i = 10000; i <= 50000; i += 10000) {
-			//for (int j = 0; j <= 9; j++) {
-				//generateFiles(i, j);
-			//}
-		//}
+		for(int i = 10000; i <= 50000; i+= 10000) {
+			for(int j = 0; j < 10; j++) {
+			generateFiles(i, j);
+			}
+		}
 		// Selection Sort
-		//performSelection("Selection");
+		//performSelection("Selection", false, 0);
+		//reSort("Selection", false, 0);
 		// Bubble Sort
-		//performSelection("Bubble");
+		//performSelection("Bubble", false, 0);
+		//reSort("Bubble", false, 0);
 		// Insertion Sort
-		//performSelection("Insertion");
+		//performSelection("Insertion", false, 1);
+		//reSort("Insertion", false, 1);
 		// Merge Sort
-		performSelection("Merge", false, 1);
+		//performSelection("Merge", false, 1);
 		//reSort("Merge", false, 1);
-		performSelection("Merge", false, 2);
 		// Quick Sort
-		//performSelection("Quick", false, 0);
-		//reSort("Quick", false);
+		performSelection("Quick", false, 0);
+		//reSort("Quick", false, 0);
 		// Heap Sort
 		//heapSort();
 		//reHeapSort();
@@ -294,9 +314,11 @@ public class main {
 		//reTreeSort();
 		// Part 2:
 		// Random Pivot Point
-		//performSelection("Quick", true);
-		// Quick + Insertion Sort Hybrid
-
+		//performSelection("Quick", true, 0);
+		//reSort("Quick", true, 0);
+		// Merge + Insertion Sort Hybrid
+		//performSelection("Merge", false, 2);
+		performSelection("Hybrid", false, 7);
 	}
 
 }
